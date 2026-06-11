@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Feed - AkzITSolutions Console</title>
+    <meta name="description" content="Review active cloud environment logs, security warnings, and server deployment updates.">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Sticky Navigation Header -->
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo" aria-label="AkzITSolutions Home">
+                <i class="fa-solid fa-cube logo-icon"></i> AkzITSolutions
+            </a>
+            
+            <!-- CSS Checkbox Hack for Hamburger Menu -->
+            <input type="checkbox" id="menu-toggle">
+            <label for="menu-toggle" class="menu-icon" aria-label="Toggle Navigation Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="dashboard-profile.html" class="nav-link active">Console</a>
+                <a href="index.html" class="btn btn-secondary nav-link-btn">Log Out</a>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="index.html" class="btn btn-secondary" style="padding: 0.5rem 1.25rem;">Log Out</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="user-profile-summary">
+                <div class="user-avatar-placeholder">SK</div>
+                <div class="user-summary-details">
+                    <h3>Sumit Kumar</h3>
+                    <span>Enterprise Tier</span>
+                </div>
+            </div>
+
+            <nav class="dashboard-nav-list">
+                <a href="dashboard-profile.html" class="dashboard-nav-link">
+                    <i class="fa-solid fa-user-gear"></i> Profile Settings
+                </a>
+                <a href="dashboard-notifications.html" class="dashboard-nav-link active">
+                    <i class="fa-solid fa-bell"></i> Activity Feed
+                </a>
+                <a href="#" class="dashboard-nav-link" onclick="alert('Telemetry System is operational.');">
+                    <i class="fa-solid fa-chart-line"></i> Infrastructure Stats
+                </a>
+                <a href="#" class="dashboard-nav-link" onclick="alert('Access keys require MFA confirmation.');">
+                    <i class="fa-solid fa-key"></i> Credentials & Keys
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <section class="dashboard-content-area">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem; flex-wrap:wrap; gap:1.5rem;">
+                <h1 style="font-size: clamp(2rem, 3.5vw, 2.5rem); margin: 0;">Activity & <span class="text-gradient">Alert Logs</span></h1>
+                <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size:0.85rem;" onclick="alert('Simulated marking all notifications as read.');">Mark All Read</button>
+            </div>
+
+            <!-- Notifications Feed Container -->
+            <div class="notifications-feed">
+                
+                <!-- Unread High Severity Warning -->
+                <div class="glass-card notification-item unread">
+                    <div class="notification-icon-wrapper warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="notification-main">
+                        <div class="notification-header">
+                            <h4>Intrusion Attempt Blocked</h4>
+                            <span class="notification-time">10 mins ago</span>
+                        </div>
+                        <p>Our Cybersecurity Shield detected and blocked a brute-force SSH intrusion targetting server cluster node-us-west-4. Attacking IP has been permanently added to the firewall blacklists.</p>
+                    </div>
+                </div>
+
+                <!-- Unread Information Alert -->
+                <div class="glass-card notification-item unread">
+                    <div class="notification-icon-wrapper info">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <div class="notification-main">
+                        <div class="notification-header">
+                            <h4>Automatic Backup Completed</h4>
+                            <span class="notification-time">1 hour ago</span>
+                        </div>
+                        <p>Database snapshot execution complete. Secure encrypted archive stored successfully on cloud region-eu-central (checksum validated).</p>
+                    </div>
+                </div>
+
+                <!-- Read Success Alert -->
+                <div class="glass-card notification-item">
+                    <div class="notification-icon-wrapper success">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="notification-main">
+                        <div class="notification-header">
+                            <h4>Deployment Successful</h4>
+                            <span class="notification-time">Yesterday</span>
+                        </div>
+                        <p>CI/CD automated release build v4.22.1 has successfully finished running tests and deployed to AWS production staging server cluster.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>

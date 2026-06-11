@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenithTask // Premium Interactive Task Manager</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Canvas for Confetti blast particles -->
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <!-- Ambient Background Blobs for Glassmorphism Visuals -->
+    <div class="ambient-blob blob-1" aria-hidden="true"></div>
+    <div class="ambient-blob blob-2" aria-hidden="true"></div>
+    <div class="ambient-blob blob-3" aria-hidden="true"></div>
+
+    <!-- Navigation Bar (Hidden in Auth Views, Shown in App Views) -->
+    <nav class="glass-nav" id="main-nav" aria-label="Main Navigation" style="display: none;">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fa-solid fa-compass-drafting logo-icon"></i>
+                <span>Zenith<span class="gradient-text">Task</span></span>
+            </div>
+            
+            <ul class="nav-links">
+                <li>
+                    <button class="nav-btn active" data-view="dashboard" aria-label="Go to Dashboard">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="notifications" aria-label="Go to Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span>Notifications</span>
+                        <span class="badge" id="notification-badge" style="display: none;">0</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="profile" aria-label="Go to Profile Settings">
+                        <i class="fa-solid fa-user-gear"></i>
+                        <span>Profile</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="nav-user-control">
+                <!-- Gamification Navbar Pill -->
+                <div class="xp-nav-pill" id="xp-nav-badge" title="Your Current Level & XP Score">
+                    <i class="fa-solid fa-trophy xp-icon"></i>
+                    <span id="nav-xp-level">Lvl 1</span>
+                    <span id="nav-xp-points">(0 XP)</span>
+                </div>
+
+                <div class="user-pill" data-view="profile">
+                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Felix" alt="Avatar" class="nav-avatar" id="nav-avatar-img">
+                    <span id="nav-username">User</span>
+                </div>
+                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button class="logout-btn" id="logout-button" aria-label="Log out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+        
+        <!-- ================= AUTHENTICATION VIEW ================= -->
+        <section id="view-auth" class="spa-view active" aria-label="Authentication">
+            <!-- Login Card -->
+            <div class="auth-card glass-panel" id="auth-login-card">
+                <div class="auth-header">
+                    <i class="fa-solid fa-compass-drafting auth-logo-icon"></i>
+                    <h2>Welcome Back</h2>
+                    <p>Log in to access your digital workspace</p>
+                </div>
+                
+                <form id="login-form" class="auth-form" novalidate>
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="login-email" placeholder="name@company.com" required>
+                        </div>
+                        <span class="error-msg" id="login-email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                            <button type="button" class="toggle-password" aria-label="Show password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-msg" id="login-password-error"></span>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="login-remember">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-link" id="forgot-password-link">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span>Sign In</span>
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Don't have an account? <button type="button" class="link-btn" id="go-to-signup">Sign Up</button></p>
+                </div>
+            </div>
+
+            <!-- Sign Up Card -->
+            <div class="auth-card glass-panel" id="auth-signup-card" style="display: none;">
+                <div class="auth-header">
+                    <i class="fa-solid fa-compass-drafting auth-logo-icon"></i>
+                    <h2>Create Account</h2>
+                    <p>Start managing tasks beautifully today</p>
+                </div>
+
+                <form id="signup-form" class="auth-form" novalidate>
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="signup-name" placeholder="John Doe" required>
+                        </div>
+                        <span class="error-msg" id="signup-name-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="signup-email" placeholder="name@company.com" required>
+                        </div>
+                        <span class="error-msg" id="signup-email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="signup-password" placeholder="Min 6 characters" required>
+                            <button type="button" class="toggle-password" aria-label="Show password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-msg" id="signup-password-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-shield-halved input-icon"></i>
+                            <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                            <button type="button" class="toggle-password" aria-label="Show password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-msg" id="signup-confirm-password-error"></span>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="signup-terms" required>
+                            <span class="checkmark"></span>
+                            I agree to the <a href="#" class="inline-link">Terms & Conditions</a>
+                        </label>
+                        <span class="error-msg" id="signup-terms-error" style="display: block; width: 100%;"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span>Sign Up</span>
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Already have an account? <button type="button" class="link-btn" id="go-to-login">Log In</button></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MAIN DASHBOARD VIEW ================= -->
+        <section id="view-dashboard" class="spa-view" aria-label="Tasks Dashboard" style="display: none;">
+            <div class="dashboard-grid">
+                
+                <!-- Dashboard Side Controls / Create Task Card -->
+                <div class="dashboard-side">
+                    <!-- Progress Card -->
+                    <div class="progress-card glass-panel text-center">
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                <circle class="progress-ring__circle" stroke="url(#progress-gradient)" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                            </svg>
+                            <!-- SVG Gradient definition -->
+                            <svg width="0" height="0">
+                                <defs>
+                                    <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#6366f1" />
+                                        <stop offset="100%" stop-color="#06b6d4" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="progress-percentage-label" id="progress-text">0%</div>
+                        </div>
+                        <h4 style="margin-top: 1rem; font-family: var(--font-heading); font-weight: 700;">Overall Progress</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;" id="progress-streak-label">Streak: 0 days</p>
+                    </div>
+
+                    <!-- AI Suggestions Card -->
+                    <div class="ai-suggestion-card glass-panel">
+                        <h4 class="panel-subtitle"><i class="fa-solid fa-wand-magic-sparkles text-cyan"></i> AI Smart Suggestion</h4>
+                        <div class="ai-suggestion-content" id="ai-suggestion-box">
+                            <p class="ai-text">Analyzing your tasks to suggest your next move...</p>
+                        </div>
+                    </div>
+
+                    <!-- Add New Task Card -->
+                    <div class="task-form-card glass-panel">
+                        <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> Create New Task</h3>
+                        
+                        <form id="task-creation-form" class="task-form">
+                            <input type="hidden" id="edit-task-id">
+                            
+                            <div class="form-group">
+                                <label for="task-title">Task Title</label>
+                                <div class="input-wrapper" style="display: flex; gap: 0.5rem; width: 100%;">
+                                    <input type="text" id="task-title" placeholder="What needs to be done?" style="padding-left: 1.25rem;" required>
+                                    <button type="button" class="voice-input-btn" id="voice-task-btn" title="Add via voice recognition">
+                                        <i class="fa-solid fa-microphone"></i>
+                                    </button>
+                                </div>
+                                <span class="help-text" id="smart-cat-label" style="display: none; color: var(--accent-secondary); font-weight: 600;"><i class="fa-solid fa-bolt"></i> Auto-selected Category</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="task-desc">Description (Optional)</label>
+                                <textarea id="task-desc" rows="2" placeholder="Add some context..."></textarea>
+                            </div>
+
+                            <!-- Dynamic Checklist Subtasks -->
+                            <div class="form-group">
+                                <label>Checklist / Subtasks</label>
+                                <div id="subtask-form-container" class="subtask-form-container">
+                                    <!-- Dynamic Inputs -->
+                                </div>
+                                <button type="button" class="btn btn-secondary" id="add-subtask-input-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: fit-content; margin-top: 0.5rem; gap: 0.4rem;">
+                                    <i class="fa-solid fa-plus-minus"></i> Add Step
+                                </button>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="task-category">Category</label>
+                                    <select id="task-category">
+                                        <option value="Work">💼 Work</option>
+                                        <option value="Personal">🏠 Personal</option>
+                                        <option value="Urgent">🔥 Urgent</option>
+                                        <option value="Shopping">🛒 Shopping</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="task-priority">Priority</label>
+                                    <select id="task-priority">
+                                        <option value="low">🟢 Low</option>
+                                        <option value="medium" selected>🟡 Medium</option>
+                                        <option value="high">🔴 High</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="task-due-date">Due Date</label>
+                                    <input type="date" id="task-due-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="task-recurrence">Recurrence</label>
+                                    <select id="task-recurrence">
+                                        <option value="none">Once</option>
+                                        <option value="daily">🔄 Daily</option>
+                                        <option value="weekly">🔄 Weekly</option>
+                                        <option value="monthly">🔄 Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Collaboration Sim Group -->
+                            <div class="form-group">
+                                <label for="task-collaborator">Assign to Team Member (Optional)</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="task-collaborator" placeholder="Enter full name to share..." style="padding-left: 1.25rem;">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancel-edit-btn" style="display: none;">Cancel</button>
+                                <button type="submit" class="btn btn-primary" id="save-task-btn">
+                                    <span id="submit-task-text">Add Task</span>
+                                    <i class="fa-solid fa-plus" id="submit-task-icon"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Backup panel -->
+                    <div class="backup-actions glass-panel">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Backup Workspace</span>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="action-btn" id="export-tasks-btn" title="Export JSON"><i class="fa-solid fa-file-export"></i></button>
+                            <button class="action-btn" id="import-tasks-btn" title="Import JSON"><i class="fa-solid fa-file-import"></i></button>
+                            <input type="file" id="import-tasks-file" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Task Feed & Analytics -->
+                <div class="dashboard-main-container">
+                    
+                    <!-- Analytics Drawers (SVG charts built dynamically) -->
+                    <div class="analytics-card glass-panel" style="margin-bottom: 2rem; padding: 2rem;">
+                        <h3 class="panel-title" style="margin-bottom: 1.25rem;"><i class="fa-solid fa-chart-column text-indigo"></i> Category Distribution & Productivity Analytics</h3>
+                        <div class="analytics-chart-wrapper">
+                            <svg class="analytics-svg" id="analytics-svg-chart" viewBox="0 0 500 200" width="100%">
+                                <!-- Dynamic SVG charts will render here -->
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Main Task List Card -->
+                    <div class="dashboard-main glass-panel">
+                        <!-- Search & Filter Controls -->
+                        <div class="search-filter-bar">
+                            <div class="search-wrapper">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="task-search-input" placeholder="Search tasks by title...">
+                            </div>
+                            
+                            <div class="sort-wrapper">
+                                <label for="task-sort-select" class="sr-only">Sort by</label>
+                                <select id="task-sort-select" aria-label="Sort tasks">
+                                    <option value="date-added-desc">Newest First</option>
+                                    <option value="date-added-asc">Oldest First</option>
+                                    <option value="due-date-asc">Due Date (Soonest)</option>
+                                    <option value="priority-desc">Priority (Highest)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Category and Status filter pills -->
+                        <div class="filter-controls-row">
+                            <!-- Status Filter Pills -->
+                            <div class="filter-group" role="tablist" aria-label="Filter by Status">
+                                <button class="filter-pill active" data-status-filter="all" role="tab" aria-selected="true">All</button>
+                                <button class="filter-pill" data-status-filter="active" role="tab" aria-selected="false">Active</button>
+                                <button class="filter-pill" data-status-filter="completed" role="tab" aria-selected="false">Completed</button>
+                            </div>
+
+                            <!-- Category Filter Pills -->
+                            <div class="filter-group" role="tablist" aria-label="Filter by Category">
+                                <button class="filter-pill active" data-cat-filter="all" role="tab" aria-selected="true">All Tags</button>
+                                <button class="filter-pill" data-cat-filter="Work" role="tab" aria-selected="false">💼 Work</button>
+                                <button class="filter-pill" data-cat-filter="Personal" role="tab" aria-selected="false">🏠 Personal</button>
+                                <button class="filter-pill" data-cat-filter="Urgent" role="tab" aria-selected="false">🔥 Urgent</button>
+                                <button class="filter-pill" data-cat-filter="Shopping" role="tab" aria-selected="false">🛒 Shopping</button>
+                            </div>
+                        </div>
+
+                        <!-- Task List Drag & Drop Area -->
+                        <div class="task-list-container">
+                            <div id="empty-state" class="empty-state">
+                                <div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                                <h4>No tasks found</h4>
+                                <p>Try creating a new task or resetting your filters!</p>
+                            </div>
+
+                            <ul class="task-list" id="task-list-element" aria-live="polite">
+                                <!-- Tasks injected dynamically via Javascript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= NOTIFICATIONS VIEW ================= -->
+        <section id="view-notifications" class="spa-view" aria-label="Notification Center" style="display: none;">
+            <div class="notification-panel-card glass-panel max-width-container">
+                <div class="panel-header-action">
+                    <div>
+                        <h2><i class="fa-solid fa-bell header-icon"></i> Activity log & Notifications</h2>
+                        <p>Keep track of task edits, updates and status changes.</p>
+                    </div>
+                    <button class="btn btn-secondary" id="mark-all-read-btn">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Mark all as read</span>
+                    </button>
+                </div>
+
+                <div class="notification-list-container">
+                    <div id="no-notifications-state" class="empty-state" style="display: none;">
+                        <div class="empty-icon"><i class="fa-solid fa-bell-slash"></i></div>
+                        <h4>Inbox Empty</h4>
+                        <p>All caught up! Notifications appear as actions occur.</p>
+                    </div>
+
+                    <ul class="notification-list" id="notification-list-element">
+                        <!-- Notifications injected dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PROFILE / SETTINGS VIEW ================= -->
+        <section id="view-profile" class="spa-view" aria-label="User Settings" style="display: none;">
+            <div class="profile-layout max-width-container">
+                <div class="profile-grid">
+                    
+                    <!-- Left: Profile info preview card -->
+                    <div class="glass-panel profile-preview-card text-center">
+                        <div class="avatar-selection-wrapper">
+                            <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Felix" alt="Profile avatar" class="profile-big-avatar" id="profile-avatar-preview">
+                            <div class="avatar-change-overlay">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span>Change Seed</span>
+                            </div>
+                        </div>
+                        <h3 id="profile-preview-name">Full Name</h3>
+                        <p id="profile-preview-email">user@email.com</p>
+                        
+                        <!-- Gamification Rank/Streak Display in Profile Card -->
+                        <div class="profile-gamification-details" style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+                            <span class="user-role-badge" id="profile-rank-badge">Rookie Level</span>
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: 0.5rem;" id="profile-xp-stats">XP: 0 / 100</div>
+                            <div class="profile-xp-bar-container" style="background: rgba(255,255,255,0.05); width: 100%; height: 8px; border-radius: 4px; margin-top: 0.25rem; overflow: hidden;">
+                                <div id="profile-xp-bar-fill" style="background: var(--accent-gradient); width: 0%; height: 100%; transition: width 0.35s;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Editable options, settings & milestone badges -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        
+                        <!-- Account settings card -->
+                        <div class="glass-panel profile-details-card">
+                            <h3>Account Settings</h3>
+                            
+                            <form id="profile-update-form" class="profile-form">
+                                <div class="form-group">
+                                    <label for="profile-name">Full Name</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-user input-icon"></i>
+                                        <input type="text" id="profile-name" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="profile-email">Email Address</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-envelope input-icon"></i>
+                                        <input type="email" id="profile-email" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="profile-avatar-seed">Avatar Seed (Generate unique robot styles)</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-wand-magic-sparkles input-icon"></i>
+                                        <input type="text" id="profile-avatar-seed" placeholder="e.g., Felix, Chloe, Sparky">
+                                    </div>
+                                    <span class="help-text">Type any text to randomize the robot illustration.</span>
+                                </div>
+
+                                <div class="app-settings-divider">App Customization</div>
+
+                                <div class="settings-toggle-row">
+                                    <div class="settings-toggle-info">
+                                        <h4>Dark Mode Visuals</h4>
+                                        <p>Toggle deep midnight styling vs bright workspace</p>
+                                    </div>
+                                    <div class="switch-container">
+                                        <input type="checkbox" id="settings-darkmode-checkbox">
+                                        <label for="settings-darkmode-checkbox" class="switch-slider" aria-label="Toggle theme settings"></label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <span>Save System Config</span>
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Gamification Milestones Badges Card -->
+                        <div class="glass-panel profile-details-card">
+                            <h3>Achievements & Milestone Badges</h3>
+                            <div class="badges-grid" id="achievements-badges-grid">
+                                <!-- Dynamic badges injected here -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="glass-footer">
+        <p>&copy; 2026 ZenithTask Dashboard. Engineered with Pure Vanilla JavaScript.</p>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
